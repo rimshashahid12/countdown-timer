@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Countdown Timer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti Library for completion animation -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="relative overflow-x-hidden flex flex-col justify-between p-4 sm:p-6 md:p-10">
+
+
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+
+    <div class="max-w-4xl mx-auto w-full relative z-10 flex-1 flex flex-col justify-center">
+        
+        <header class="text-center mb-8 sm:mb-12">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs sm:text-sm font-semibold tracking-wider uppercase mb-3">
+                <i class="fa-solid font-bold fa-stopwatch"></i> Smart Countdown Timer
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-indigo-300">
+                Time Remaining
+            </h1>
+            <p id="timer-description" class="text-gray-400 text-sm sm:text-base mt-2 max-w-md mx-auto">
+                Set a target date or enter custom duration to begin your countdown.
+            </p>
+        </header>
+
+        <div class="flex justify-center mb-6">
+            <div id="status-badge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium bg-slate-800/80 text-gray-300 border border-slate-700/60 shadow-inner">
+                <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-gray-400"></span>
+                <span id="status-text">Ready to Start</span>
+            </div>
+        </div>
+
+        <div id="display-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12">
+
+            <div class="glass-card rounded-2xl p-4 sm:p-6 text-center transition-all duration-300 hover:border-indigo-500/40 group">
+                <div class="text-xs sm:text-sm font-medium text-indigo-400 tracking-wider uppercase mb-1">Days</div>
+                <div id="card-days" class="mono text-4xl sm:text-6xl font-extrabold text-white group-hover:scale-105 transition-transform duration-300">00</div>
+                <div class="text-[10px] sm:text-xs text-gray-500 mt-2">24 Hours</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-4 sm:p-6 text-center transition-all duration-300 hover:border-purple-500/40 group">
+                <div class="text-xs sm:text-sm font-medium text-purple-400 tracking-wider uppercase mb-1">Hours</div>
+                <div id="card-hours" class="mono text-4xl sm:text-6xl font-extrabold text-white group-hover:scale-105 transition-transform duration-300">00</div>
+                <div class="text-[10px] sm:text-xs text-gray-500 mt-2">60 Minutes</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-4 sm:p-6 text-center transition-all duration-300 hover:border-pink-500/40 group">
+                <div class="text-xs sm:text-sm font-medium text-pink-400 tracking-wider uppercase mb-1">Minutes</div>
+                <div id="card-minutes" class="mono text-4xl sm:text-6xl font-extrabold text-white group-hover:scale-105 transition-transform duration-300">00</div>
+                <div class="text-[10px] sm:text-xs text-gray-500 mt-2">60 Seconds</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-4 sm:p-6 text-center transition-all duration-300 hover:border-cyan-500/40 group relative overflow-hidden">
+                <div class="text-xs sm:text-sm font-medium text-cyan-400 tracking-wider uppercase mb-1">Seconds</div>
+                <div id="card-seconds" class="mono text-4xl sm:text-6xl font-extrabold text-white group-hover:scale-105 transition-transform duration-300">00</div>
+                <div class="text-[10px] sm:text-xs text-gray-500 mt-2">Realtime</div>
+            </div>
+        </div>
+
+        <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-6">
+
+            <div class="flex rounded-xl bg-black/40 p-1.5 border border-white/5 max-w-md mx-auto">
+                <button id="tab-datetime" onclick="switchMode('datetime')" class="flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-300 bg-indigo-600 text-white shadow-md">
+                    <i class="fa-regular fa-calendar-days mr-1.5"></i> Date & Time
+                </button>
+                <button id="tab-duration" onclick="switchMode('duration')" class="flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-300 text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-hourglass-half mr-1.5"></i> Custom Duration
+                </button>
+            </div>
+
+            <div id="mode-datetime" class="space-y-4">
+                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 text-center">Select Target Date & Time</label>
+                <div class="flex justify-center">
+                    <input type="datetime-local" id="target-datetime" class="glass-input px-4 py-3 rounded-xl w-full max-w-sm text-center text-sm font-medium shadow-inner focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+
+            <div id="mode-duration" class="hidden space-y-4">
+                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 text-center">Set Duration (H : M : S)</label>
+                <div class="grid grid-cols-3 gap-3 max-w-xs mx-auto text-center">
+                    <div>
+                        <input type="number" id="input-hours" min="0" max="999" placeholder="00" class="glass-input w-full py-3 rounded-xl text-center mono font-bold text-lg">
+                        <span class="text-[10px] text-gray-400 mt-1 block">HOURS</span>
+                    </div>
+                    <div>
+                        <input type="number" id="input-minutes" min="0" max="59" placeholder="00" class="glass-input w-full py-3 rounded-xl text-center mono font-bold text-lg">
+                        <span class="text-[10px] text-gray-400 mt-1 block">MINUTES</span>
+                    </div>
+                    <div>
+                        <input type="number" id="input-seconds" min="0" max="59" placeholder="00" class="glass-input w-full py-3 rounded-xl text-center mono font-bold text-lg">
+                        <span class="text-[10px] text-gray-400 mt-1 block">SECONDS</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <span class="block text-[11px] font-semibold uppercase tracking-wider text-gray-400 text-center">Quick Presets</span>
+                <div class="flex flex-wrap justify-center gap-2">
+                    <button onclick="applyPreset('5m')" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium transition-all hover:border-indigo-400/50">+5 Min</button>
+                    <button onclick="applyPreset('10m')" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium transition-all hover:border-indigo-400/50">+10 Min</button>
+                    <button onclick="applyPreset('30m')" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium transition-all hover:border-indigo-400/50">+30 Min</button>
+                    <button onclick="applyPreset('1h')" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium transition-all hover:border-indigo-400/50">+1 Hour</button>
+                    <button onclick="applyPreset('newyear')" class="px-3 py-1.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-xs text-indigo-300 font-medium transition-all">🎉 New Year</button>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center items-center gap-3 pt-4 border-t border-white/10">
+                <button id="btn-start" onclick="toggleTimer()" class="flex-1 sm:flex-none px-8 py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold shadow-lg shadow-indigo-500/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-play text-sm"></i> <span>Start Timer</span>
+                </button>
+                <button id="btn-reset" onclick="resetTimer()" class="px-6 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 font-semibold transition-all hover:text-white flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-left text-sm"></i> <span>Reset</span>
+                </button>
+                <button id="btn-clear" onclick="clearTimer()" class="px-6 py-3.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 font-semibold transition-all hover:text-red-300 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-trash-can text-sm"></i> <span>Clear</span>
+                </button>
+            </div>
+      
+            <div class="flex justify-center items-center gap-2 pt-2">
+                <button id="btn-sound" onclick="toggleSound()" class="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1.5">
+                    <i id="sound-icon" class="fa-solid fa-volume-high text-indigo-400"></i>
+                    <span id="sound-text">Sound: Enabled</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+   
+    <footer class="mt-8 text-center text-xs text-gray-500 relative z-10">
+        Crafted with <i class="fa-solid fa-heart text-rose-500 mx-0.5"></i> Modern Web Standards
+    </footer>
+
+ <script src="assets/js/script.js"></script>
+</body>
+</html>
